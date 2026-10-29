@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>灰度日记</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;500&family=DM+Sans:wght@300;400;500&display=swap">
+
+<style>
+/* 背景音乐按钮 */
+.music-btn {
+  position: fixed;
+  right: 18px;
+  bottom: 22px;
+  z-index: 20;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--fg);
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(0,0,0,.08);
+}
+
+.music-btn.playing {
+  animation: music-spin 5s linear infinite;
+}
+
+@keyframes music-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .music-btn.playing {
+    animation: none;
+  }
+}
+</style>
+<style>
+:root{--bg:#f4f4f3;--fg:#111;--mute:#8a8a8a;--line:#dcdcda;--t1:#e9e9e7;--t2:#cfcfcd;--t3:#a9a9a7;--t4:#2a2a2a;--card:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e0e0e;--fg:#f2f2f0;--mute:#8a8a8a;--line:#2b2b2b;--t1:#1d1d1d;--t2:#2c2c2c;--t3:#4a4a4a;--t4:#d8d8d6;--card:#181818;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e0e0e;--fg:#f2f2f0;--mute:#8a8a8a;--line:#2b2b2b;--t1:#1d1d1d;--t2:#2c2c2c;--t3:#4a4a4a;--t4:#d8d8d6;--card:#181818;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--bg);color:var(--fg);font-family:"DM Sans","PingFang SC","Noto Sans SC",system-ui,sans-serif;font-weight:300;min-height:100vh;transition:background .4s,color .4s}
+main{max-width:560px;margin:0 auto;padding:44px 20px 72px}
+.top{display:flex;justify-content:flex-end;margin-bottom:28px}
+button{font:inherit;color:inherit;background:none;border:1px solid var(--line);border-radius:999px;padding:7px 16px;cursor:pointer;font-size:13px;transition:background .2s}
+button:hover{background:var(--t1)}
+button:focus-visible,.tile:focus-visible{outline:2px solid var(--fg);outline-offset:3px}
+.head{display:flex;align-items:center;gap:26px;margin-bottom:26px}
+.ava{width:86px;height:86px;border-radius:50%;flex:none;position:relative;background:conic-gradient(from 200deg,var(--fg),var(--t3),var(--t1),var(--fg));padding:3px;cursor:pointer;overflow:hidden}
+.ava i{display:block;width:100%;height:100%;border-radius:50%;background:var(--t2);border:3px solid var(--bg);background-position:center;background-size:cover;background-repeat:no-repeat}
+.ava::after{content:"＋";position:absolute;right:2px;bottom:2px;width:22px;height:22px;border-radius:50%;background:var(--fg);color:var(--bg);display:grid;place-items:center;font-size:16px;line-height:1;border:2px solid var(--bg)}
+#avatarInput{display:none}
+.clock{font-family:"Noto Serif SC",serif;font-weight:300;font-size:clamp(28px,8vw,36px);letter-spacing:-.02em;line-height:1}
+.date{margin-top:8px;color:var(--mute);font-size:13px}
+.bio{font-size:14px;line-height:1.8;margin-bottom:30px;color:var(--fg)}
+.bio span{color:var(--mute)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.tile{aspect-ratio:1;position:relative;overflow:hidden;border:0;border-radius:0;padding:0;background:var(--t1);cursor:pointer;display:block}
+.tile::after{content:attr(data-w);position:absolute;left:10px;bottom:9px;font-family:"Noto Serif SC",serif;font-size:14px;color:var(--fg);opacity:0;transform:translateY(4px);transition:.3s}
+.tile:hover::after,.tile:focus-visible::after{opacity:1;transform:none}
+.tile b{position:absolute;inset:0;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.tile:hover b{transform:scale(1.12) rotate(4deg)}
+.p1 b{background:radial-gradient(circle at 70% 30%,var(--fg) 0 18%,transparent 19%),var(--t2)}
+.p2 b{background:linear-gradient(180deg,var(--t2) 50%,var(--t3) 50%)}
+.p3 b{background:repeating-linear-gradient(115deg,var(--t2) 0 6px,var(--t1) 6px 14px)}
+.p4 b{background:linear-gradient(90deg,var(--t4) 0 38%,var(--t1) 38%)}
+.p5 b{background:radial-gradient(circle at 50% 120%,var(--t3) 0 55%,var(--t1) 56%)}
+.p6 b{background:radial-gradient(var(--t3) 1.5px,transparent 2px) 0 0/14px 14px,var(--t1)}
+.p7 b{background:radial-gradient(circle at 30% 40%,var(--t1) 0 22%,transparent 23%),var(--t4)}
+.p8 b{background:linear-gradient(135deg,var(--t1),var(--t3))}
+.p9 b{background:radial-gradient(ellipse 40% 22% at 35% 60%,var(--t1) 98%,transparent),radial-gradient(ellipse 34% 20% at 62% 45%,var(--t1) 98%,transparent),var(--t3)}
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:22px;color:var(--mute);font-size:13px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:5;backdrop-filter:blur(6px)}
+.ov.on{opacity:1;pointer-events:auto}
+.card{width:min(340px, calc((100dvh - 48px) * 7 / 12));aspect-ratio:7/12;max-height:calc(100dvh - 48px);perspective:1200px;transform:translateY(14px) scale(.96);transition:transform .4s cubic-bezier(.2,.7,.2,1)}
+.fl{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.3,.7,.2,1)}
+.card.flip .fl{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 30px 60px rgba(0,0,0,.25)}
+.back{background:#f5f5f2;color:#111;display:flex;align-items:center;justify-content:center;font-family:"Noto Serif SC",serif;font-size:30px;overflow:hidden;border:1px solid #111;background-image:repeating-linear-gradient(45deg,transparent 0 12px,rgba(0,0,0,.18) 12px 13px),repeating-linear-gradient(-45deg,transparent 0 12px,rgba(0,0,0,.18) 12px 13px),radial-gradient(circle at center,#fff 0 18%,transparent 18.5%),linear-gradient(#f5f5f2,#e7e7e3)}
+.back::before{content:"";position:absolute;inset:0;border:9px double #111;background:repeating-linear-gradient(90deg,transparent 0 24px,rgba(0,0,0,.08) 24px 25px);pointer-events:none}
+.back::after{content:"✦  ☾  ✦";position:absolute;left:0;right:0;top:13%;text-align:center;font-family:serif;font-size:22px;letter-spacing:.5em;color:#111;pointer-events:none}
+.back span{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:76px;height:76px;border:1px solid #111;border-radius:50%;background:#f5f5f2;box-shadow:0 0 0 5px #f5f5f2,0 0 0 6px #111;font-size:30px}
+.back .ornament{position:absolute;bottom:13%;font-size:22px;letter-spacing:.5em;z-index:1}
+.front{background:var(--card);transform:rotateY(180deg);padding:0;display:flex;flex-direction:column;overflow:hidden}
+.card-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:30px 26px 18px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.card-scroll h2{font-family:"Noto Serif SC",serif;font-weight:500;font-size:32px;letter-spacing:.08em;margin-bottom:18px}
+.card-scroll p{font-family:"Noto Serif SC",serif;font-weight:300;font-size:15px;line-height:1.9;white-space:pre-line}
+.card-scroll .profile{font-size:14px;line-height:2.05}
+.card-scroll .profile strong{font-weight:500;display:block;margin-top:10px}
+.card-scroll .notice{font-size:12px;line-height:1.85;letter-spacing:.01em}
+.card-scroll .notice:not(:empty){overflow-wrap:anywhere}
+.card-footer{flex:none;text-align:center;color:#999;font-size:10px;letter-spacing:.08em;padding:12px 10px 17px}
+.ov.on .card{transform:none}
+.card small{color:var(--mute);font-size:12px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><button id="th" aria-label="切换明暗">明 / 暗</button></div>
+  <div class="head">
+    <label class="ava" for="avatarInput" title="点击上传头像"><i id="avatarPreview"></i></label><input id="avatarInput" type="file" accept="image/*" aria-label="上传头像">
+    <div><div class="clock">@ 痴</div><div class="date">痴恋、痴态、痴缠</div></div>
+  </div>
+  <p class="bio">爱是深深的慈悲。<br><span>靠近我。</span></p>
+  <div class="grid" id="g"></div>
+  <div class="row"><span id="cnt">已收集 0 / 9</span><button id="rd">随便抽一张</button></div>
+</main>
+<div class="ov" id="ov" role="dialog" aria-modal="true"><div class="card" id="cd"><div class="fl"><div class="face back"><span>痴</span><i class="ornament">✦  ☼  ✦</i></div><div class="face front"><div class="card-scroll"><h2 id="cw"></h2><p id="cp"></p><small id="cs"></small></div><div class="card-footer" id="cardFooter">— 请带着真诚来见我 —</div></div></div></div></div>
+
+
+<audio id="bgm" loop preload="auto">
+  <source src="music/bgm.mp3" type="audio/mpeg">
+</audio>
+
+<button id="musicToggle" class="music-btn"
+        type="button" aria-label="播放背景音乐">
+  ♪
+</button>
+
+<script>
+  const bgm = document.getElementById('bgm');
+  const musicToggle = document.getElementById('musicToggle');
+
+  function updateMusicButton() {
+    const playing = !bgm.paused;
+    musicToggle.classList.toggle('playing', playing);
+    musicToggle.textContent = playing ? '♫' : '♪';
+    musicToggle.setAttribute(
+      'aria-label',
+      playing ? '暂停背景音乐' : '播放背景音乐'
+    );
+  }
+
+  musicToggle.addEventListener('click', async () => {
+    if (bgm.paused) {
+      try {
+        await bgm.play();
+      } catch (err) {
+        console.log('音乐播放失败，请检查音频文件路径。', err);
+      }
+    } else {
+      bgm.pause();
+    }
+    updateMusicButton();
+  });
+
+  bgm.addEventListener('play', updateMusicButton);
+  bgm.addEventListener('pause', updateMusicButton);
+  bgm.addEventListener('ended', updateMusicButton);
+
+  // 尝试自动播放；浏览器可能会拦截
+  bgm.play().catch(() => {});
+</script>
+<script>
+const D=[
+["关于我","痴 / 20 / 天蝎座 / le-h\n病恋 / 虚恋\n\n擅长：\n以退为进 / 暧昧拉扯 / 温恋剖析\n\n不擅长：\n拼刺刀 / 强压 / 小狗文学","profile","— 请带着真诚来见我 —"],
+["怨你","没有病恋 只有「我们」\n或许并不符合你的期待\n\n耷眉乞怜 摇尾紧逼\n可别松了防备\n我最擅长 蹬鼻子上脸"],
+["须知","请在约会前告知我您的称呼喜雷，不接受“暗雷”。无明确要求则随机掉落风格。\n板位拼刺刀/低恋/无恋/半单口请提前告知。\n未经本人允许，不得截图录像。\n半/1h前5/10min不满意退全款，超时不退不换。\n双向选择，互相尊重。如您让我感到不适，我有权终止这场约会。\n旁观保持安静，否则按一陪二算。旁观婉拒带对象/暧昧/狗/主。\n禁熟人未告知/披马甲点单，发现永拒。\n不接受无正当理由无截图证据的差评。\n打字速度一般，我会等你说完后再开口，也请你稍等等我。","notice","— 对我稍微认真一点吧，求你 —"],
+["恨你","说过的话 做过的事\n都不能定义「我和你」\n可怜可爱可悲可叹\n如果 幸福 是眼泪蓄成的河\n我要拖着你溺毙\n拜托了 和我一起"],
+["随笔","不甘呀，执念呀……要在你纵容了我的靠近后，呢喃轻叹着扬掌重重落下一个耳光，看你耳畔的嗡鸣和脸颊的红晕同时泛起，像羞赧像恼怒，看你拿氤氲起水雾的眸瞪视我，漂亮宛如一件艺术品，引得人挪不开目光。\n而我将在你愣神的间隙，掌心紧贴着肌肤向下，扣上你的颈将你攥入掌心，像提一只濒死的天鹅。\n漂亮的，悲切的，如一只柔软脆弱的幼兽，挣扎的四肢和细碎的呜咽都将是我的兴奋剂。"],
+["纠缠你","给我一点时间「让我爱你」\n不够聪明不够机灵\n只有拼命 拼命 靠近你\n痴迷于你"],
+["话术","不是亲口对你说出的话没有留下的必要"],["板评","反正吃过的都说好"],["价格表","卡装扮+3 指定+3 旁观+8/位\n单口+10\n病：\n半h 20 1h 38\n虚：\n半h 18 1h 35"]
+];
+const got=new Set(),g=document.getElementById("g"),ov=document.getElementById("ov");
+D.forEach((d,i)=>{const t=document.createElement("button");t.className="tile p"+(i+1);t.dataset.w=d[0];t.setAttribute("aria-label",d[0]);t.innerHTML="<b></b>";t.onclick=()=>show(i);g.appendChild(t)});
+function show(i){got.add(i);cw.textContent=D[i][0];cp.textContent=D[i][1];cp.className=D[i][2]==="profile"?"profile":D[i][2]==="notice"?"notice":"";cs.textContent=i===0?"":"第 "+(i+1)+" 张，共 9 张";cardFooter.textContent=D[i][3]||"";cardFooter.style.display=D[i][3]?"block":"none";cnt.textContent="已收集 "+got.size+" / 9";document.querySelector(".card-scroll").scrollTop=0;ov.classList.add("on");setTimeout(()=>cd.classList.add("flip"),450)}
+ov.onclick=e=>{if(e.target===ov){ov.classList.remove("on");cd.classList.remove("flip")}};
+addEventListener("keydown",e=>{if(e.key==="Escape"){ov.classList.remove("on");cd.classList.remove("flip")}});
+rd.onclick=()=>show(Math.floor(Math.random()*9));
+th.onclick=()=>{const r=document.documentElement,dark=getComputedStyle(r).colorScheme==="dark";r.dataset.theme=dark?"light":"dark"};
+const avatarInput=document.getElementById("avatarInput"),avatarPreview=document.getElementById("avatarPreview");
+try{const saved=localStorage.getItem("grayDiaryAvatar");if(saved)avatarPreview.style.backgroundImage=`url("${saved}")`}catch(e){}
+avatarInput.addEventListener("change",()=>{const file=avatarInput.files&&avatarInput.files[0];if(!file)return;if(!file.type.startsWith("image/"))return;const reader=new FileReader();reader.onload=()=>{const data=reader.result;avatarPreview.style.backgroundImage=`url("${data}")`;try{localStorage.setItem("grayDiaryAvatar",data)}catch(e){alert("头像已显示，但图片太大，浏览器可能无法保存。请尝试上传较小的图片。")}};reader.readAsDataURL(file)});
+</script>
+</body>
+</html>
